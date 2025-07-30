@@ -21,6 +21,7 @@ import com.example.finalapplication1.Screens.SearchScreen
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
+
     val viewModel: PictureViewModel = viewModel()
     Scaffold(
         bottomBar = {
