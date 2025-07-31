@@ -16,13 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
 import com.example.finalapplication1.PictureViewModel
 
 
 @Composable
-fun SearchScreen(photoViewModel: PictureViewModel) {
+fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController) {
 
     val photos by photoViewModel.photos.collectAsState()
     val isLoading by photoViewModel.isLoading.collectAsState()
@@ -45,8 +45,10 @@ fun SearchScreen(photoViewModel: PictureViewModel) {
                     key = { index -> photos[index].id }
                 ) { index ->
                     // Show photo item
-                    PhotoItem(photo = photos[index], viewModel = photoViewModel)
-
+                    PhotoItem(
+                        photo = photos[index],
+                        viewModel = photoViewModel,
+                        onClick = { navController.navigate("detail/${photos[index].id}") })
 
                     if (index == photos.size - 1) {
                         LaunchedEffect(key1 = photos.size) {

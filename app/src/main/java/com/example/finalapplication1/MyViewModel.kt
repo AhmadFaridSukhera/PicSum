@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class PictureViewModel @Inject constructor(
+open class PictureViewModel @Inject constructor(
     private val repository: PicsumRepository
 ) : ViewModel() {
 
@@ -138,7 +138,7 @@ class PictureViewModel @Inject constructor(
 
     fun toggleFavoriteForImage(photo: PicsumImage) {
         viewModelScope.launch {
-            isImageFavorite(photo.id).collect { isFav ->
+            val isFav = isImageFavorite(photo.id).first()
                 if (isFav) {
                     repository.deleteImageById(photo.id)
                 } else {
@@ -147,7 +147,7 @@ class PictureViewModel @Inject constructor(
                 }
             }
         }
-    }
+
 
     fun isCurrentImageFavoriteFlow(): Flow<Boolean> {
         val id = baseImageUrl?.split("/")?.getOrNull(4) ?: return MutableStateFlow(false)

@@ -13,3 +13,6 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: Image
     object Favorites : BottomNavItem("favorites", "Favorites", Icons.Filled.Favorite)
     object Search : BottomNavItem("search", "Search", Icons.Filled.Search)
 }
+object DetailRoute {
+    const val route = "detail/{photoId}"
+}
