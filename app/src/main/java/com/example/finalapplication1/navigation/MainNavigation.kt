@@ -48,8 +48,11 @@ fun MainNavigation() {
                 })
             ) { backStackEntry ->
                 val photoId = backStackEntry.arguments?.getString("photoId")
-                val photos = viewModel.photos.collectAsState().value
-                val image = photos.find { it.id == photoId }
+                val allPhotos =
+                    viewModel.photos.collectAsState().value + viewModel.favorites.collectAsState(
+                        initial = (emptyList())
+                    ).value
+                val image = allPhotos.find { it.id == photoId }
 
                 if (image != null) {
                     DetailsScreen(photo = image)
