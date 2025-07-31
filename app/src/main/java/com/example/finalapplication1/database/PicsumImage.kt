@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 data class PicsumImage(
     @PrimaryKey val id: String,
     val author: String,
+    val width: Int,
+    val height: Int,
     val source: String = "search",
     val isFavorite: Boolean = false,
     val download_url: String

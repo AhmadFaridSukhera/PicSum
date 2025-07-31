@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,7 +60,8 @@ fun PhotoItem(
                     durationMillis = 300,
                     easing = LinearOutSlowInEasing
                 )
-            )
+            ),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -72,9 +75,13 @@ fun PhotoItem(
             ) {
                 AsyncImage(
                     model = photo.download_url,
-                    contentDescription = photo.id,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    contentDescription = photo.id,
+
+
                     onSuccess = {
                         isImageLoading = false
                     },
@@ -120,25 +127,11 @@ fun PhotoItem(
                 if (expandedState) {
 
                     Text(
-                        text = "Captured by:  ${photo.author}",
-                        style = MaterialTheme.typography.bodyLarge,
+                        "Photo ID: ${photo.id}",
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text(
-                        text = "Captured by:  ${photo.author}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "Captured by:  ${photo.author}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "Captured by:  ${photo.author}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+
 
                 }
             }

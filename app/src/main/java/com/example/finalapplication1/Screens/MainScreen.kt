@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,8 +53,8 @@ fun MainScreen(viewModel: PictureViewModel) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .background(MaterialTheme.colorScheme.background),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceDim),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
@@ -189,7 +190,11 @@ fun MainScreen(viewModel: PictureViewModel) {
                         modifier = Modifier.width(200.dp)
                     )
                 }
-                Button(onClick = viewModel::toggleGrayscale) {
+                Button(
+
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                    onClick = viewModel::toggleGrayscale
+                ) {
                     Text(if (viewModel.isGray) "Colored" else "Grayscale")
                 }
             }

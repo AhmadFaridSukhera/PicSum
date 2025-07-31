@@ -44,6 +44,7 @@ android {
 dependencies {
     // for hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.ui.text.google.fonts)
     ksp(libs.hilt.compiler)
 
 

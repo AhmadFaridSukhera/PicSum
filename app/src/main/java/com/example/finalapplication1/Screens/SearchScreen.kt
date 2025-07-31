@@ -1,14 +1,17 @@
 package com.example.finalapplication1.Screens
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,8 +30,7 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
     val photos by photoViewModel.photos.collectAsState()
     val isLoading by photoViewModel.isLoading.collectAsState()
 
-    Column(modifier = Modifier
-        .padding(16.dp)) {
+    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceDim)) {
 
         if (photos.isEmpty() && isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -36,19 +38,21 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
             }
 
         } else {
-            LazyColumn(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Adaptive(200.dp),
+                verticalItemSpacing = 4.dp,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                content = {
                 items(
                     count = photos.size,
                     key = { index -> photos[index].id }
                 ) { index ->
+                    val photo = photos[index]
                     // Show photo item
                     PhotoItem(
-                        photo = photos[index],
+                        photo = photo,
                         viewModel = photoViewModel,
-                        onClick = { navController.navigate("detail/${photos[index].id}") })
+                        onClick = { navController.navigate("detail/${photo.id}") })
 
                     if (index == photos.size - 1) {
                         LaunchedEffect(key1 = photos.size) {
@@ -71,7 +75,9 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
 
 
                 }
-            }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

@@ -28,6 +28,7 @@ fun MainNavigation() {
     val navController = rememberNavController()
 
     val viewModel: PictureViewModel = viewModel()
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
