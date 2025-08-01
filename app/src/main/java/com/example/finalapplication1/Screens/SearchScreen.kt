@@ -4,9 +4,9 @@ package com.example.finalapplication1.Screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -36,23 +36,15 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
             .background(MaterialTheme.colorScheme.surfaceDim),
 
         ) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 4.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp)
     ) {
-
-        if (photos.isEmpty() && isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-
-        } else {
             LazyVerticalStaggeredGrid(
 
-                // close up the horizontal gap between items
-                horizontalArrangement = Arrangement.spacedBy(1.dp),
 
-                // leave a little vertical gap between items
+                horizontalArrangement = Arrangement.spacedBy(1.dp),
                 verticalItemSpacing = 8.dp,
                 columns = StaggeredGridCells.Adaptive(200.dp),
                 content = {
@@ -61,7 +53,6 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
                     key = { index -> photos[index].id }
                 ) { index ->
                     val photo = photos[index]
-                    // Show photo item
                     PhotoItem(
                         photo = photo,
                         viewModel = photoViewModel,
@@ -85,12 +76,19 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
                         }
                     }
 
-
                 }
                 },
                 modifier = Modifier.fillMaxSize()
             )
+            if (photos.isEmpty() && isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+        }
         }
     }
 }
-}
+

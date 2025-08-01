@@ -39,8 +39,17 @@ fun BottomNavigationBar(navController: NavController) {
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     indicatorColor = MaterialTheme.colorScheme.inversePrimary
                 ),
+                alwaysShowLabel = true,
                 icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) },
+                label = {
+                    Text(
+                        item.label,
+                        color = if (currentRoute == item.route)
+                            MaterialTheme.colorScheme.onTertiary
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
                 selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {
@@ -50,6 +59,7 @@ fun BottomNavigationBar(navController: NavController) {
                             }
                             launchSingleTop = true
                             restoreState = true
+
                         }
                     }
                 }

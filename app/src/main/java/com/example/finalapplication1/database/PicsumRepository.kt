@@ -8,12 +8,10 @@ import kotlin.random.Random
 
 class PicsumRepository @Inject constructor(val apiService: PicsumApiService, val imageDao: ImageDao) {
 
-    fun getRandomImageUrlWithSeed( width: Int, height: Int): String {
+    suspend fun getImageBySeed(): PicsumImage {
         val seed = Random.nextInt(1000, 9999)
-        return "https://picsum.photos/seed/$seed/${width}/${height}"
-    }
-    suspend fun getImageInfoBySeed(seed: String): PicsumImage {
-        return apiService.getImageInfoBySeed(seed)
+        return apiService.getImageInfoBySeed("$seed")
+
     }
     suspend fun getImageList(currentPage: Int): List<PicsumImage> {
         return apiService.getImageList(page = currentPage)

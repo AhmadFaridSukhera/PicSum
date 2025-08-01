@@ -2,6 +2,8 @@ package com.example.finalapplication1.Screens
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -47,9 +50,11 @@ import com.example.finalapplication1.PictureViewModel
 @Composable
 fun MainScreen(viewModel: PictureViewModel) {
 
-    val isFavorite by viewModel.isFavorite.collectAsState()
-    var imageUrl = viewModel.imageUrl
+    val imageUrl = viewModel.imageUrl
+    val isFavorite = viewModel.isFavorite.collectAsState()
     var isImageLoading by remember { mutableStateOf(true) }
+
+
 
     Surface(
         modifier = Modifier
@@ -58,29 +63,14 @@ fun MainScreen(viewModel: PictureViewModel) {
 
         ) {
         Column(
-            modifier = Modifier,
+            modifier = Modifier.scrollable(
+                orientation = Orientation.Vertical,
+                state = rememberScrollState()
+            ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            // verticalArrangement = Arrangement.SpaceBetween
-        ) {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Column(modifier = Modifier) {}
-////                Text(
-////                    text = "Hello, Ahmad", fontSize = 24.sp,
-////                    style = MaterialTheme.typography.bodyLarge
-////                )
-////                Text("Welcome to PictureView")
-////            }
-//
-//        }
 
-//            Text(
-//                text = "Photo Preview", fontSize = 24.sp,
-//                style = MaterialTheme.typography.labelLarge
-//            )
+
+            ) {
             Box(modifier = Modifier
                 .height(600.dp)
                 .clip(RoundedCornerShape(10.dp))) {
@@ -138,12 +128,15 @@ fun MainScreen(viewModel: PictureViewModel) {
                     .background(MaterialTheme.colorScheme.surfaceDim)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = {
+
                             viewModel.toggleFavoriteForCurrentImage()
                         },
                         modifier = Modifier
@@ -152,9 +145,9 @@ fun MainScreen(viewModel: PictureViewModel) {
 
                     ) {
                         Icon(
-                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
-                            tint = Color.Red,
+                            imageVector = if (isFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite.value) "Unfavorite" else "Favorite",
+                            tint = Color.White,
                             modifier = Modifier.fillMaxSize(0.6f)
                         )
                     }

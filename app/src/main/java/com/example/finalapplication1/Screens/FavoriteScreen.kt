@@ -28,7 +28,7 @@ fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
     val favorites by viewModel.favorites.collectAsState(initial = emptyList())
     Column(
         modifier = Modifier
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = 4.dp, vertical = 1.dp)
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {

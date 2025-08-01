@@ -1,9 +1,10 @@
 package com.example.finalapplication1
+
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -47,22 +48,47 @@ open class PictureViewModel @Inject constructor(
 
     var baseImageUrl by mutableStateOf<String?>(null)
     var imageUrl by mutableStateOf<String?>(null)
+    private val _photo = mutableStateOf<PicsumImage?>(null)
+    val photo: State<PicsumImage?> = _photo
 
     init {
+        viewModelScope.launch {
         loadInitialImage()
+        }
         loadMorePhotos()
     }
 
-    private fun loadInitialImage() {
-        val url = repository.getRandomImageUrlWithSeed(800, 600)
-        baseImageUrl = url
-        imageUrl = buildImageUrl(url, isGray, blur)
+    suspend fun loadInitialImage() {
+        val photo = repository.getImageBySeed()
+
+        baseImageUrl = photo.download_url
+        imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+
+        val finalImage = photo.copy(
+            isFavorite = true,
+            source = "main",
+            download_url = imageUrl ?: photo.download_url
+        )
+
+        _photo.value = finalImage
     }
 
+
     fun refreshImage() {
-        val newUrl = repository.getRandomImageUrlWithSeed(800, 600)
-        baseImageUrl = newUrl
-        imageUrl = buildImageUrl(newUrl, isGray, blur)
+        viewModelScope.launch {
+            val photo = repository.getImageBySeed()
+
+            baseImageUrl = photo.download_url
+            imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+
+            val finalImage = photo.copy(
+                isFavorite = true,
+                source = "main",
+                download_url = imageUrl ?: photo.download_url
+            )
+
+            _photo.value = finalImage
+        }
     }
 
     fun toggleGrayscale() {
@@ -115,47 +141,40 @@ open class PictureViewModel @Inject constructor(
     }
 
     fun toggleFavoriteForCurrentImage() {
-        val url = imageUrl ?: return
-        val seed = url.split("/").getOrNull(4) ?: return
-
         viewModelScope.launch {
-            val isFav = isImageFavorite(seed).first()
+            val currentImage = _photo.value ?: return@launch
+            val isFav = isImageFavorite(currentImage.id).first()
+
             if (isFav) {
+                repository.deleteImageById(currentImage.id)
                 _isFavorite.value = false
-                repository.deleteImageById(seed)
             } else {
                 _isFavorite.value = true
-                val image = repository.getImageInfoBySeed(seed)
-                    val finalImage = image.copy(
-                        id = seed,
-                        isFavorite = true,
-                        source = "main",
-                        download_url = buildImageUrl(url, isGray, blur)
-                    )
-                    repository.insertImage(finalImage)
+                val updatedImage = currentImage.copy(
+                    isFavorite = true,
+                    source = "main",
+                    download_url = buildImageUrl(currentImage.download_url, isGray, blur)
+                )
+                repository.insertImage(updatedImage)
 
             }
         }
     }
-
 
     fun toggleFavoriteForImage(photo: PicsumImage) {
         viewModelScope.launch {
             val isFav = isImageFavorite(photo.id).first()
                 if (isFav) {
+                    _isFavorite.value = false
                     repository.deleteImageById(photo.id)
                 } else {
                     val updated = photo.copy(isFavorite = true, source = "favorites")
+                    _isFavorite.value = true
                     repository.insertImage(updated)
                 }
             }
         }
 
-
-    fun isCurrentImageFavoriteFlow(): Flow<Boolean> {
-        val id = baseImageUrl?.split("/")?.getOrNull(4) ?: return MutableStateFlow(false)
-        return isImageFavorite(id)
-    }
 
     fun isImageFavorite(id: String): Flow<Boolean> {
         return favorites.map { list -> list.any { it.id == id } }
