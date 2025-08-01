@@ -32,7 +32,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,14 +44,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.finalapplication1.PictureViewModel
 
 
 @Composable
-fun MainScreen(viewModel: PictureViewModel) {
+fun MainScreen(
+    imageUrl: String?,
+    isFavorite: State<Boolean>,
+    onToggleFavorite: () -> Unit,
+    refreshImage: () -> Unit,
+    onToggleGrayscale: () -> Unit,
+    onBlurChangeFinished: (Float) -> Unit,
+    sliderPosition: Float,
+    onSliderValueChange: (Float) -> Unit,
+    isGray: Boolean
+) {
 
-    val imageUrl = viewModel.imageUrl
-    val isFavorite = viewModel.isFavorite.collectAsState()
     var isImageLoading by remember { mutableStateOf(true) }
 
 
@@ -75,7 +82,7 @@ fun MainScreen(viewModel: PictureViewModel) {
                 .height(600.dp)
                 .clip(RoundedCornerShape(10.dp))) {
                     AsyncImage(
-                        model = imageUrl,
+                        model = imageUrl ?: "",
                         contentDescription = "Random picture",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
@@ -101,7 +108,7 @@ fun MainScreen(viewModel: PictureViewModel) {
                         }
                     }
                     IconButton(
-                        onClick = { viewModel.refreshImage() },
+                        onClick = { refreshImage() },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(8.dp)
@@ -137,7 +144,7 @@ fun MainScreen(viewModel: PictureViewModel) {
                     IconButton(
                         onClick = {
 
-                            viewModel.toggleFavoriteForCurrentImage()
+                            onToggleFavorite()
                         },
                         modifier = Modifier
                             .padding(8.dp)
@@ -154,9 +161,9 @@ fun MainScreen(viewModel: PictureViewModel) {
                     Button(
 
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer),
-                        onClick = viewModel::toggleGrayscale
+                        onClick = { onToggleGrayscale() }
                     ) {
-                        Text(if (viewModel.isGray) "Colored" else "Grayscale")
+                        Text(if (isGray) "Colored" else "Grayscale")
                     }
                 }
                 Row(
@@ -171,9 +178,9 @@ fun MainScreen(viewModel: PictureViewModel) {
                     Text(text = "Add Blur")
 
                     Slider(
-                        value = viewModel.sliderPosition,
-                        onValueChange = { value -> viewModel.sliderPosition = value },
-                        onValueChangeFinished = { viewModel.updateBlur(viewModel.sliderPosition) },
+                        value = sliderPosition,
+                        onValueChange = { value -> onSliderValueChange(value) },
+                        onValueChangeFinished = { onBlurChangeFinished(sliderPosition) },
                         steps = 9,
                         valueRange = 0f..10f,
                         modifier = Modifier.width(300.dp),

@@ -1,6 +1,7 @@
 package com.example.finalapplication1.navigation
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,11 +24,13 @@ import com.example.finalapplication1.Screens.MainScreen
 import com.example.finalapplication1.Screens.SearchScreen
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
 
     val viewModel: PictureViewModel = viewModel()
+
 
     Scaffold(
         bottomBar = {
@@ -39,7 +42,19 @@ fun MainNavigation() {
             startDestination = BottomNavItem.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Home.route) { MainScreen(viewModel) }
+            composable(BottomNavItem.Home.route) {
+                MainScreen(
+                    imageUrl = viewModel.imageUrl,
+                    isFavorite = viewModel.isFavorite.collectAsState(),
+                    onToggleFavorite = { viewModel.toggleFavoriteForCurrentImage() },
+                    refreshImage = { viewModel.refreshImage() },
+                    onToggleGrayscale = { viewModel.toggleGrayscale() },
+                    onBlurChangeFinished = { viewModel.updateBlur(it) },
+                    sliderPosition = viewModel.sliderPosition,
+                    onSliderValueChange = { viewModel.sliderPosition = it },
+                    isGray = viewModel.isGray
+                )
+            }
             composable(BottomNavItem.Search.route) { SearchScreen(viewModel, navController) }
             composable(BottomNavItem.Favorites.route) { FavoriteScreen(viewModel, navController) }
             composable(

@@ -48,7 +48,7 @@ open class PictureViewModel @Inject constructor(
 
     var baseImageUrl by mutableStateOf<String?>(null)
     var imageUrl by mutableStateOf<String?>(null)
-    private val _photo = mutableStateOf<PicsumImage?>(null)
+    val _photo = mutableStateOf<PicsumImage?>(null)
     val photo: State<PicsumImage?> = _photo
 
     init {
