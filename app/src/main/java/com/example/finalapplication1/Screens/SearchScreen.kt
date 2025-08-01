@@ -30,7 +30,9 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
     val photos by photoViewModel.photos.collectAsState()
     val isLoading by photoViewModel.isLoading.collectAsState()
 
-    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceDim)) {
+    Column(modifier = Modifier
+        .background(MaterialTheme.colorScheme.surfaceDim)
+        .padding(4.dp)) {
 
         if (photos.isEmpty() && isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -39,9 +41,13 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
 
         } else {
             LazyVerticalStaggeredGrid(
+
+                // close up the horizontal gap between items
+                horizontalArrangement = Arrangement.spacedBy(1.dp),
+
+                // leave a little vertical gap between items
+                verticalItemSpacing = 8.dp,
                 columns = StaggeredGridCells.Adaptive(200.dp),
-                verticalItemSpacing = 4.dp,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 content = {
                 items(
                     count = photos.size,

@@ -11,9 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -49,9 +48,13 @@ fun PhotoItem(
     var isImageLoading by remember { mutableStateOf(true) }
     var expandedState by remember { mutableStateOf(false) }
 
+
+
+
+
     Card(
         modifier = Modifier
-            .padding(8.dp)
+
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { expandedState = !expandedState })
@@ -61,7 +64,7 @@ fun PhotoItem(
                     easing = LinearOutSlowInEasing
                 )
             ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -71,15 +74,16 @@ fun PhotoItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
+
             ) {
                 AsyncImage(
                     model = photo.download_url,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop,
+
                     contentDescription = photo.id,
+
 
 
                     onSuccess = {
@@ -109,22 +113,24 @@ fun PhotoItem(
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
+                        modifier = Modifier.size(24.dp),
                         tint = Color.White
                     )
                 }
             }
 
-
+            if (expandedState) {
             Column(
                 modifier = Modifier.padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+
+
                 Text(
                     text = "Captured by:  ${photo.author}",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (expandedState) {
 
                     Text(
                         "Photo ID: ${photo.id}",

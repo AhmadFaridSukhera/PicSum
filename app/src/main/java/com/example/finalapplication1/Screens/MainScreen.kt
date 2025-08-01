@@ -46,7 +46,7 @@ import com.example.finalapplication1.PictureViewModel
 @Composable
 fun MainScreen(viewModel: PictureViewModel) {
 
-    val isFavorite by viewModel.isCurrentImageFavoriteFlow().collectAsState(initial = false)
+    val isFavorite by viewModel.isFavorite.collectAsState()
     var imageUrl = viewModel.imageUrl
     var isImageLoading by remember { mutableStateOf(true) }
 

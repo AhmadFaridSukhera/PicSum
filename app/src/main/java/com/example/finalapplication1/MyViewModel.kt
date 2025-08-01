@@ -33,6 +33,8 @@ open class PictureViewModel @Inject constructor(
 
     // Tracks loading state for the progress indicator
     private val _isLoading = MutableStateFlow(false)
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
     val isLoading: StateFlow<Boolean> = _isLoading
 
 
@@ -119,6 +121,7 @@ open class PictureViewModel @Inject constructor(
         viewModelScope.launch {
             val isFav = isImageFavorite(seed).first()
             if (isFav) {
+                _isFavorite.value = !_isFavorite.value
                 repository.deleteImageById(seed)
             } else {
                 val image = repository.getImageInfoBySeed(seed)
