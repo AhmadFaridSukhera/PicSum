@@ -9,7 +9,7 @@ interface PicsumApiService {
     // Get list of images
     @GET("v2/list")
     suspend fun getImageList(
-        @Query("page") page: Int = 1, @Query("limit") limit: Int = 100
+        @Query("page") page: Int = 1, @Query("limit") limit: Int = 40
     ): List<PicsumImage>
 
     @GET("seed/{seed}/info")

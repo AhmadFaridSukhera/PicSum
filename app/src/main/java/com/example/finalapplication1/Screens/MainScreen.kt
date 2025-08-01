@@ -1,12 +1,12 @@
 package com.example.finalapplication1.Screens
 
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,10 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.finalapplication1.PictureViewModel
 
@@ -50,45 +51,39 @@ fun MainScreen(viewModel: PictureViewModel) {
     var imageUrl = viewModel.imageUrl
     var isImageLoading by remember { mutableStateOf(true) }
 
-
-    Column(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceDim),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(
-                    text = "Hello, Ahmad", fontSize = 24.sp,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text("Welcome to PictureView")
-            }
 
-        }
+        ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-
+            // verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Photo Preview", fontSize = 24.sp,
-                style = MaterialTheme.typography.labelLarge
-            )
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Column(modifier = Modifier) {}
+////                Text(
+////                    text = "Hello, Ahmad", fontSize = 24.sp,
+////                    style = MaterialTheme.typography.bodyLarge
+////                )
+////                Text("Welcome to PictureView")
+////            }
+//
+//        }
 
-
-            Surface(
-                modifier = Modifier.height(300.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Box {
+//            Text(
+//                text = "Photo Preview", fontSize = 24.sp,
+//                style = MaterialTheme.typography.labelLarge
+//            )
+            Box(modifier = Modifier
+                .height(600.dp)
+                .clip(RoundedCornerShape(10.dp))) {
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = "Random picture",
@@ -135,70 +130,71 @@ fun MainScreen(viewModel: PictureViewModel) {
                             )
                     }
 
+
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(
                         onClick = {
-
-                            Log.d(
-                                "DEBUG",
-                                "url: ${viewModel.imageUrl}\n fav: $isFavorite"
-                            )
-
                             viewModel.toggleFavoriteForCurrentImage()
                         },
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
                             .padding(8.dp)
-                            .size(50.dp)
-                            .background(
-                                Color.Black.copy(alpha = 0.4f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            .size(40.dp)
+
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
-                            tint = Color.White,
+                            tint = Color.Red,
                             modifier = Modifier.fillMaxSize(0.6f)
                         )
                     }
+                    Button(
+
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer),
+                        onClick = viewModel::toggleGrayscale
+                    ) {
+                        Text(if (viewModel.isGray) "Colored" else "Grayscale")
+                    }
                 }
-            }
-
-
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "BlurControl"
-                    )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+            ) {
+                    Text(text = "Add Blur")
+
                     Slider(
                         value = viewModel.sliderPosition,
-                        onValueChange = {value -> viewModel.sliderPosition=value },
-                        onValueChangeFinished = {viewModel.updateBlur(viewModel.sliderPosition)},
+                        onValueChange = { value -> viewModel.sliderPosition = value },
+                        onValueChangeFinished = { viewModel.updateBlur(viewModel.sliderPosition) },
                         steps = 9,
                         valueRange = 0f..10f,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier.width(300.dp),
+                        colors = SliderDefaults.colors(MaterialTheme.colorScheme.onErrorContainer),
                     )
                 }
-                Button(
-
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
-                    onClick = viewModel::toggleGrayscale
-                ) {
-                    Text(if (viewModel.isGray) "Colored" else "Grayscale")
-                }
             }
+
+
+        }
+    }
         }
 
 
-    }
-}
+
+
+

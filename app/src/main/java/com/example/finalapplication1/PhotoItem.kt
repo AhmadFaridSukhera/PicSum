@@ -9,6 +9,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -72,19 +73,19 @@ fun PhotoItem(
             verticalArrangement = Arrangement.Center,
         ) {
             Box(
-                modifier = Modifier
+                modifier = (Modifier
                     .fillMaxWidth()
+                    .aspectRatio(photo.width.toFloat() / photo.height.toFloat()))
 
             ) {
                 AsyncImage(
                     model = photo.download_url,
                     modifier = Modifier
                         .fillMaxWidth(),
+
                     contentScale = ContentScale.Crop,
 
                     contentDescription = photo.id,
-
-
 
                     onSuccess = {
                         isImageLoading = false
@@ -99,10 +100,12 @@ fun PhotoItem(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.4f)),
-                        contentAlignment = Alignment.Center
+                            .background(Color.Gray)
                     ) {
-                        CircularProgressIndicator(color = Color.White)
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.White
+                        )
                     }
                 }
                 IconButton(

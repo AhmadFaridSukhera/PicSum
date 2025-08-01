@@ -1,5 +1,6 @@
 package com.example.finalapplication1.navigation
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -8,6 +9,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -22,18 +25,19 @@ fun BottomNavigationBar(navController: NavController) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val shouldShowBottomBar = items.any { it.route == currentRoute }
 
+    if (shouldShowBottomBar) {
     NavigationBar(
+        modifier = Modifier.height(90.dp),
         containerColor = MaterialTheme.colorScheme.onSurface
     ) {
         items.forEach { item ->
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    selectedIconColor = MaterialTheme.colorScheme.onTertiary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    selectedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer
+                    indicatorColor = MaterialTheme.colorScheme.inversePrimary
                 ),
                 icon = { Icon(item.icon, contentDescription = item.label) },
                 label = { Text(item.label) },
@@ -52,4 +56,5 @@ fun BottomNavigationBar(navController: NavController) {
             )
         }
     }
+}
 }

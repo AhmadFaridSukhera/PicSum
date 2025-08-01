@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,10 +31,15 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
     val photos by photoViewModel.photos.collectAsState()
     val isLoading by photoViewModel.isLoading.collectAsState()
 
+    Surface(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceDim),
+
+        ) {
     Column(modifier = Modifier
-        .background(MaterialTheme.colorScheme.surfaceDim)
         .fillMaxSize()
-        .padding(4.dp)) {
+        .padding(horizontal = 4.dp)
+    ) {
 
         if (photos.isEmpty() && isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -67,7 +73,6 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
                         }
                     }
                 }
-                // Add footer loader
                 if (isLoading) {
                     item {
                         Box(
@@ -87,4 +92,5 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
             )
         }
     }
+}
 }
