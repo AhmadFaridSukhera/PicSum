@@ -1,6 +1,7 @@
 package com.example.finalapplication1.Screens
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,7 +26,12 @@ import com.example.finalapplication1.PictureViewModel
 @Composable
 fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
     val favorites by viewModel.favorites.collectAsState(initial = emptyList())
-    Column(modifier = Modifier.padding(4.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
     when {
         favorites.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

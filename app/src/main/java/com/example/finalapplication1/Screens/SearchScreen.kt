@@ -32,6 +32,7 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
 
     Column(modifier = Modifier
         .background(MaterialTheme.colorScheme.surfaceDim)
+        .fillMaxSize()
         .padding(4.dp)) {
 
         if (photos.isEmpty() && isLoading) {

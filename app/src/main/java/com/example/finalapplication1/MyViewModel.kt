@@ -97,7 +97,7 @@ open class PictureViewModel @Inject constructor(
     }
 
     fun loadMorePhotos() {
-        //Prevent multiple simultaneous loads
+
         if (_isLoading.value) return
 
         viewModelScope.launch {
@@ -121,11 +121,11 @@ open class PictureViewModel @Inject constructor(
         viewModelScope.launch {
             val isFav = isImageFavorite(seed).first()
             if (isFav) {
-                _isFavorite.value = !_isFavorite.value
+                _isFavorite.value = false
                 repository.deleteImageById(seed)
             } else {
+                _isFavorite.value = true
                 val image = repository.getImageInfoBySeed(seed)
-
                     val finalImage = image.copy(
                         id = seed,
                         isFavorite = true,
