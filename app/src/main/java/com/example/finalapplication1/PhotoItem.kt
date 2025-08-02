@@ -55,7 +55,6 @@ fun PhotoItem(
 
     Card(
         modifier = Modifier
-
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { expandedState = !expandedState })
@@ -127,21 +126,11 @@ fun PhotoItem(
                 modifier = Modifier.padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
-
-                Text(
-                    text = "Captured by:  ${photo.author}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
                     Text(
                         "Photo ID: ${photo.id}",
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.fillMaxWidth()
                     )
-
-
                 }
             }
 
