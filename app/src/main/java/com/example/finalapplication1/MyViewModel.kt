@@ -1,7 +1,6 @@
 package com.example.finalapplication1
 
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,7 +48,7 @@ open class PictureViewModel @Inject constructor(
     var baseImageUrl by mutableStateOf<String?>(null)
     var imageUrl by mutableStateOf<String?>(null)
     val _photo = mutableStateOf<PicsumImage?>(null)
-    val photo: State<PicsumImage?> = _photo
+
 
     init {
         viewModelScope.launch {
@@ -86,8 +85,9 @@ open class PictureViewModel @Inject constructor(
                 source = "main",
                 download_url = imageUrl ?: photo.download_url
             )
-
+            _isFavorite.value = false
             _photo.value = finalImage
+
         }
     }
 

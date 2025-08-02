@@ -36,7 +36,7 @@ fun BottomNavigationBar(navController: NavController) {
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onTertiary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
                     indicatorColor = MaterialTheme.colorScheme.inversePrimary
                 ),
                 alwaysShowLabel = true,
@@ -47,7 +47,7 @@ fun BottomNavigationBar(navController: NavController) {
                         color = if (currentRoute == item.route)
                             MaterialTheme.colorScheme.onTertiary
                         else
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            MaterialTheme.colorScheme.onPrimary
                     )
                 },
                 selected = currentRoute == item.route,

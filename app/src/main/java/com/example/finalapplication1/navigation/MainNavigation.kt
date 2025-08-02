@@ -1,6 +1,7 @@
 package com.example.finalapplication1.navigation
 
 
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ fun MainNavigation() {
     val viewModel: PictureViewModel = viewModel()
 
 
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
@@ -40,9 +42,11 @@ fun MainNavigation() {
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Home.route,
+
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Home.route) {
+
+        composable(BottomNavItem.Home.route) {
                 MainScreen(
                     imageUrl = viewModel.imageUrl,
                     isFavorite = viewModel.isFavorite.collectAsState(),

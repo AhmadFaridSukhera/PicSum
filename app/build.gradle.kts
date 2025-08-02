@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    //for splash screen
+    implementation(libs.androidx.core.splashscreen)
     // for hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.ui.text.google.fonts)
