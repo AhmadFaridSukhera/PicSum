@@ -59,8 +59,24 @@ fun MainNavigation() {
                     isGray = viewModel.isGray.collectAsState(),
                 )
             }
-            composable(BottomNavItem.Search.route) { SearchScreen(viewModel, navController) }
-            composable(BottomNavItem.Favorites.route) { FavoriteScreen(viewModel, navController) }
+            composable(BottomNavItem.Search.route) {
+                SearchScreen(
+                    photos = viewModel.photos.collectAsState(),
+                    loadMorePhotos = { viewModel.loadMorePhotos() },
+                    isFavorite = { image -> viewModel.isImageFavorite(image.id) },
+                    isLoading = viewModel.isLoading.collectAsState(),
+                    navController = navController,
+                    toggleFavoriteForImage = { image -> viewModel.toggleFavoriteForImage(image) },
+                )
+            }
+            composable(BottomNavItem.Favorites.route) {
+                FavoriteScreen(
+                    navController = navController,
+                    favorites = viewModel.favorites.collectAsState(initial = emptyList()),
+                    isFavorite = { image -> viewModel.isImageFavorite(image.id) },
+                    toggleFavoriteForImage = { image -> viewModel.toggleFavoriteForImage(image) }
+                )
+            }
             composable(
                 route = DetailRoute.route,
                 arguments = listOf(navArgument("photoId") {

@@ -15,20 +15,25 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
-import com.example.finalapplication1.PictureViewModel
+import com.example.finalapplication1.database.PicsumImage
+import kotlinx.coroutines.flow.Flow
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
-    val favorites by viewModel.favorites.collectAsState(initial = emptyList())
+fun FavoriteScreen(
+    navController: NavController,
+    favorites: State<List<PicsumImage>>,
+    isFavorite: (PicsumImage) -> Flow<Boolean>,
+    toggleFavoriteForImage: (PicsumImage) -> Unit
+) {
+
     Column(
         modifier = Modifier
             .padding(horizontal = 4.dp)
@@ -36,7 +41,7 @@ fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
             .background(MaterialTheme.colorScheme.background)
     ) {
     when {
-        favorites.isEmpty() -> {
+        favorites.value.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "You haven't added any items.")
             }
@@ -48,9 +53,9 @@ fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(1.dp),
                 verticalItemSpacing = 8.dp,
                 content = {
-                    items(favorites) { photo ->
+                    items(favorites.value) { photo ->
 
-                        PhotoItem(photo = photo, viewModel = viewModel, onClick = {
+                        PhotoItem(photo = photo, isFavorite, toggleFavoriteForImage, onClick = {
                             navController.navigate("detail/${photo.id}")
 
                         })

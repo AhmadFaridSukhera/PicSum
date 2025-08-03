@@ -14,22 +14,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
-import com.example.finalapplication1.PictureViewModel
+import com.example.finalapplication1.database.PicsumImage
+import kotlinx.coroutines.flow.Flow
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController) {
+fun SearchScreen(
+    photos: State<List<PicsumImage>>,
+    loadMorePhotos: () -> Unit,
+    isFavorite: (PicsumImage) -> Flow<Boolean>,
+    isLoading: State<Boolean>,
+    navController: NavController,
+    toggleFavoriteForImage: (PicsumImage) -> Unit
+) {
 
-    val photos by photoViewModel.photos.collectAsState()
-    val isLoading by photoViewModel.isLoading.collectAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -47,26 +52,27 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
                 modifier = Modifier.fillMaxSize(),
                 content = {
                     items(
-                        count = photos.size,
-                        key = { index -> photos[index].id }
+                        count = photos.value.size,
+                        key = { index -> photos.value[index].id }
                     ) { index ->
-                        val photo = photos[index]
+                        val photo = photos.value[index]
                         PhotoItem(
                             photo = photo,
-                            viewModel = photoViewModel,
+                            isFavorite,
+                            onToggleFavorite = toggleFavoriteForImage,
                             onClick = { navController.navigate("detail/${photo.id}") }
                         )
 
 
-                        if (index == photos.size - 1) {
-                            LaunchedEffect(key1 = photos.size) {
-                                photoViewModel.loadMorePhotos()
+                        if (index == photos.value.size - 1) {
+                            LaunchedEffect(key1 = photos.value.size) {
+                                loadMorePhotos()
                             }
                         }
                     }
 
 
-                    if (isLoading && photos.isNotEmpty()) {
+                    if (isLoading.value && photos.value.isNotEmpty()) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             Box(
                                 modifier = Modifier
@@ -82,7 +88,7 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
             )
 
 
-            if (isLoading && photos.isEmpty()) {
+            if (isLoading.value && photos.value.isEmpty()) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )

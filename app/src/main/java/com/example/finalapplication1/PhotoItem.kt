@@ -37,20 +37,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.finalapplication1.database.PicsumImage
+import kotlinx.coroutines.flow.Flow
 
 
 @Composable
 fun PhotoItem(
     photo: PicsumImage,
-    viewModel: PictureViewModel,
+    isFavorite: (PicsumImage) -> Flow<Boolean>,
+    onToggleFavorite: (PicsumImage) -> Unit,
     onClick: () -> Unit
 ) {
-    val isFavorite by viewModel.isImageFavorite(photo.id).collectAsState(initial = false)
     var isImageLoading by remember { mutableStateOf(true) }
     var expandedState by remember { mutableStateOf(false) }
-
-
-
 
 
     Card(
@@ -109,11 +107,11 @@ fun PhotoItem(
                 }
                 IconButton(
                     onClick = {
-                        viewModel.toggleFavoriteForImage(photo)
+                        onToggleFavorite(photo)
                     }, modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(24.dp),
                         tint = Color.White
