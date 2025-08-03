@@ -1,6 +1,7 @@
 package com.example.finalapplication1.Screens
 
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
 import com.example.finalapplication1.PictureViewModel
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
     val favorites by viewModel.favorites.collectAsState(initial = emptyList())
@@ -41,7 +44,7 @@ fun FavoriteScreen(viewModel: PictureViewModel, navController: NavController) {
 
         else -> {
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Adaptive(200.dp),
+                columns = StaggeredGridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(1.dp),
                 verticalItemSpacing = 8.dp,
                 content = {

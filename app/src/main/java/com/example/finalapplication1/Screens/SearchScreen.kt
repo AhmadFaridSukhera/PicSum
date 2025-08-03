@@ -1,5 +1,6 @@
 package com.example.finalapplication1.Screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,8 @@ import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
 import com.example.finalapplication1.PictureViewModel
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController) {
 
@@ -40,7 +43,7 @@ fun SearchScreen(photoViewModel: PictureViewModel, navController: NavController)
             LazyVerticalStaggeredGrid(
                 horizontalArrangement = Arrangement.spacedBy(1.dp),
                 verticalItemSpacing = 8.dp,
-                columns = StaggeredGridCells.Adaptive(200.dp),
+                columns = StaggeredGridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize(),
                 content = {
                     items(

@@ -133,7 +133,6 @@ open class PictureViewModel @Inject constructor(
                 _isLoading.value = true
                 val newPhotos = repository.getImageList(currentPage)
                 _photos.value += newPhotos
-
                 currentPage++
             } finally {
                 _isLoading.value = false

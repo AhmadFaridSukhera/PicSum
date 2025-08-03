@@ -1,6 +1,7 @@
 package com.example.finalapplication1.Screens
 
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -64,10 +65,6 @@ fun MainScreen(
 ) {
 
     var isImageLoading by remember { mutableStateOf(true) }
-
-
-
-
 
     Surface(
         modifier = Modifier
@@ -146,7 +143,6 @@ fun MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceDim)
             ) {
                 Row(
                     modifier = Modifier
@@ -167,7 +163,7 @@ fun MainScreen(
                         Icon(
                             imageVector = if (isFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (isFavorite.value) "Unfavorite" else "Favorite",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
                             modifier = Modifier.fillMaxSize(0.6f)
                         )
                     }
@@ -189,7 +185,6 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(4.dp)
                     .clip(RoundedCornerShape(5.dp))
-                    .background(MaterialTheme.colorScheme.surfaceDim)
             ) {
                     Text(text = "Add Blur")
 
@@ -202,7 +197,10 @@ fun MainScreen(
                         steps = 9,
                         valueRange = 0f..10f,
                         modifier = Modifier.width(300.dp),
-                        colors = SliderDefaults.colors(MaterialTheme.colorScheme.onErrorContainer),
+                        colors = SliderDefaults.colors(
+                            MaterialTheme.colorScheme.onErrorContainer,
+                            activeTrackColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
                     )
                 }
             }
