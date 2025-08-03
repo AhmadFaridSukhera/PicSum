@@ -117,23 +117,23 @@ fun DetailsScreen(photo: PicsumImage) {
                 else null,
             )
 
-        }
-        if (showSheet) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Image Details", fontSize = 24.sp)
-                Text("Id: ${photo.id}")
-                Text("Captured By: ${photo.author}")
-                Text("Width: ${photo.width}")
-                Text("Height: ${photo.height}")
+
+            if (showSheet) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Image Details", fontSize = 24.sp)
+                    Text("Id: ${photo.id}")
+                    Text("Captured By: ${photo.author}")
+                    Text("Width: ${photo.width}")
+                    Text("Height: ${photo.height}")
+                }
             }
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
