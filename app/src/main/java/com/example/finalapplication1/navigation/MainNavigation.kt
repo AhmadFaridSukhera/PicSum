@@ -48,7 +48,7 @@ fun MainNavigation() {
 
         composable(BottomNavItem.Home.route) {
                 MainScreen(
-                    imageUrl = viewModel.imageUrl,
+                    imageUrl = viewModel.baseImageUrl,
                     isFavorite = viewModel.isFavorite.collectAsState(),
                     onToggleFavorite = { viewModel.toggleFavoriteForCurrentImage() },
                     refreshImage = { viewModel.refreshImage() },
@@ -56,7 +56,7 @@ fun MainNavigation() {
                     onBlurChangeFinished = { viewModel.updateBlur(it) },
                     sliderPosition = viewModel.sliderPosition,
                     onSliderValueChange = { viewModel.sliderPosition = it },
-                    isGray = viewModel.isGray
+                    isGray = viewModel.isGray.collectAsState(),
                 )
             }
             composable(BottomNavItem.Search.route) { SearchScreen(viewModel, navController) }

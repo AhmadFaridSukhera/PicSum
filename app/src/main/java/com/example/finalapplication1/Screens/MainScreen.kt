@@ -39,8 +39,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -56,10 +60,12 @@ fun MainScreen(
     onBlurChangeFinished: (Float) -> Unit,
     sliderPosition: Float,
     onSliderValueChange: (Float) -> Unit,
-    isGray: Boolean
+    isGray: State<Boolean>
 ) {
 
     var isImageLoading by remember { mutableStateOf(true) }
+
+
 
 
 
@@ -84,7 +90,15 @@ fun MainScreen(
                     AsyncImage(
                         model = imageUrl ?: "",
                         contentDescription = "Random picture",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blur(
+                                sliderPosition.dp,
+                                edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(8.dp))
+                            ),
+                        colorFilter = if (isGray.value)
+                            ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                        else null,
                         contentScale = ContentScale.Crop,
                         onLoading = {
                             isImageLoading = true
@@ -143,7 +157,6 @@ fun MainScreen(
                 ) {
                     IconButton(
                         onClick = {
-
                             onToggleFavorite()
                         },
                         modifier = Modifier
@@ -161,9 +174,12 @@ fun MainScreen(
                     Button(
 
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer),
-                        onClick = { onToggleGrayscale() }
+                        onClick = {
+
+                            onToggleGrayscale()
+                        }
                     ) {
-                        Text(if (isGray) "Colored" else "Grayscale")
+                        Text(if (isGray.value) "Colored" else "Grayscale")
                     }
                 }
                 Row(
@@ -180,7 +196,9 @@ fun MainScreen(
                     Slider(
                         value = sliderPosition,
                         onValueChange = { value -> onSliderValueChange(value) },
-                        onValueChangeFinished = { onBlurChangeFinished(sliderPosition) },
+                        onValueChangeFinished = {
+                            onBlurChangeFinished(sliderPosition)
+                        },
                         steps = 9,
                         valueRange = 0f..10f,
                         modifier = Modifier.width(300.dp),
@@ -193,6 +211,7 @@ fun MainScreen(
         }
     }
         }
+
 
 
 

@@ -40,7 +40,9 @@ open class PictureViewModel @Inject constructor(
 
     // Tracks the current page for pagination
     private var currentPage = 1
-    var isGray by mutableStateOf(false)
+
+    private val _isGray = MutableStateFlow(false)
+    var isGray: StateFlow<Boolean> = _isGray
 
     var blur by mutableIntStateOf(0)
     var sliderPosition by mutableFloatStateOf(0f)
@@ -61,7 +63,7 @@ open class PictureViewModel @Inject constructor(
         val photo = repository.getImageBySeed()
 
         baseImageUrl = photo.download_url
-        imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+        imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
 
         val finalImage = photo.copy(
             isFavorite = true,
@@ -78,7 +80,7 @@ open class PictureViewModel @Inject constructor(
             val photo = repository.getImageBySeed()
 
             baseImageUrl = photo.download_url
-            imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+            imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
 
             val finalImage = photo.copy(
                 isFavorite = true,
@@ -92,8 +94,8 @@ open class PictureViewModel @Inject constructor(
     }
 
     fun toggleGrayscale() {
-        isGray = !isGray
-        imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+        _isGray.value = !_isGray.value
+        //imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
         Log.d("ImageURL", "baseUrl=$baseImageUrl, gray=$isGray, blur=$blur")
     }
 
@@ -101,7 +103,7 @@ open class PictureViewModel @Inject constructor(
     fun updateBlur(value: Float) {
         sliderPosition = value
         blur = value.toInt()
-        imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+        imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
         Log.d("BlurUrl", "baseUrl=$baseImageUrl, gray=$isGray, blur=$blur")
     }
 
@@ -153,7 +155,7 @@ open class PictureViewModel @Inject constructor(
                 val updatedImage = currentImage.copy(
                     isFavorite = true,
                     source = "main",
-                    download_url = buildImageUrl(currentImage.download_url, isGray, blur)
+                    download_url = buildImageUrl(currentImage.download_url, _isGray.value, blur)
                 )
                 repository.insertImage(updatedImage)
 
