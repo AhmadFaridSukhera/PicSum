@@ -170,7 +170,6 @@ fun DetailsScreen(photo: PicsumImage) {
                     .fillMaxWidth()
                     .padding(4.dp)
                     .clip(RoundedCornerShape(5.dp))
-                    .background(MaterialTheme.colorScheme.surfaceDim)
             ) {
                 Text(text = "Add Blur")
 

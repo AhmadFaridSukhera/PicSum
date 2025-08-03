@@ -88,6 +88,8 @@ open class PictureViewModel @Inject constructor(
                 download_url = imageUrl ?: photo.download_url
             )
             _isFavorite.value = false
+            sliderPosition = 0f
+            _isGray.value = false
             _photo.value = finalImage
 
         }
