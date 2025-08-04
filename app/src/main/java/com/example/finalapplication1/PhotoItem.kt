@@ -6,13 +6,10 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -22,8 +19,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,6 +48,7 @@ fun PhotoItem(
 
     Card(
         modifier = Modifier
+            .aspectRatio(photo.width.toFloat() / photo.height.toFloat())
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { expandedState = !expandedState })
@@ -64,15 +60,9 @@ fun PhotoItem(
             ),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
             Box(
                 modifier = (Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(photo.width.toFloat() / photo.height.toFloat()))
+                    .fillMaxSize())
 
             ) {
                 AsyncImage(
@@ -111,7 +101,8 @@ fun PhotoItem(
                     }, modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite
+                        else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(24.dp),
                         tint = Color.White
@@ -119,22 +110,10 @@ fun PhotoItem(
                 }
             }
 
-            if (expandedState) {
-            Column(
-                modifier = Modifier.padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                    Text(
-                        "Photo ID: ${photo.id}",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
 
-        }
     }
-}
+    }
+
 
 
 

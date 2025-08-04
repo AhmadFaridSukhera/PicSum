@@ -91,7 +91,7 @@ fun MainNavigation() {
                 val image = allPhotos.find { it.id == photoId }
 
                 if (image != null) {
-                    DetailsScreen(photo = image)
+                    DetailsScreen(photo = image, navController)
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Image not found")

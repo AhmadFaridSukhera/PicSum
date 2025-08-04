@@ -69,7 +69,7 @@ fun MainScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceDim),
+            .background(MaterialTheme.colorScheme.primary),
 
         ) {
         Column(
