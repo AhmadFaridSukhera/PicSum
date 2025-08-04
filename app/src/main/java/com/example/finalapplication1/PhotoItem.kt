@@ -1,9 +1,6 @@
 package com.example.finalapplication1
 
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -43,7 +40,7 @@ fun PhotoItem(
     onClick: () -> Unit
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
-    var expandedState by remember { mutableStateOf(false) }
+
 
 
     Card(
@@ -51,12 +48,6 @@ fun PhotoItem(
             .aspectRatio(photo.width.toFloat() / photo.height.toFloat())
             .combinedClickable(
                 onClick = onClick,
-                onLongClick = { expandedState = !expandedState })
-            .animateContentSize(
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = LinearOutSlowInEasing
-                )
             ),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {

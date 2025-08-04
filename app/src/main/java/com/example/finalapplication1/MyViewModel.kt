@@ -44,9 +44,12 @@ open class PictureViewModel @Inject constructor(
     private val _isGray = MutableStateFlow(false)
     var isGray: StateFlow<Boolean> = _isGray
 
+    private val _isGrayDetail = MutableStateFlow(false)
+    var isGrayDetail: StateFlow<Boolean> = _isGrayDetail
     var blur by mutableIntStateOf(0)
+    var blurDetail by mutableIntStateOf(0)
     var sliderPosition by mutableFloatStateOf(0f)
-
+    var sliderPositionDetail by mutableFloatStateOf(0f)
     var baseImageUrl by mutableStateOf<String?>(null)
     var imageUrl by mutableStateOf<String?>(null)
     val _photo = mutableStateOf<PicsumImage?>(null)
@@ -100,13 +103,24 @@ open class PictureViewModel @Inject constructor(
         //imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
         Log.d("ImageURL", "baseUrl=$baseImageUrl, gray=$isGray, blur=$blur")
     }
+    fun toggleGrayscaleDetail() {
+        _isGrayDetail.value = !_isGrayDetail.value
+        //imageUrl = buildImageUrl(baseImageUrl, isGray, blur)
+        Log.d("ImageURL", "baseUrl=$baseImageUrl, gray=$isGrayDetail, blur=$blur")
+    }
 
 
     fun updateBlur(value: Float) {
         sliderPosition = value
         blur = value.toInt()
-        imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
+        //imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
         Log.d("BlurUrl", "baseUrl=$baseImageUrl, gray=$isGray, blur=$blur")
+    }
+
+    fun updateBlurDetail(value: Float) {
+        sliderPositionDetail = value
+        blurDetail = value.toInt()
+        // Log.d("BlurUrl", "baseUrl=$baseImageUrl, gray=$isGrayDetail, blur=$blurDetail")
     }
 
     private fun buildImageUrl(baseUrl: String?, isGray: Boolean, blur: Int): String {
@@ -159,7 +173,6 @@ open class PictureViewModel @Inject constructor(
                     download_url = buildImageUrl(currentImage.download_url, _isGray.value, blur)
                 )
                 repository.insertImage(updatedImage)
-
             }
         }
     }
@@ -177,6 +190,27 @@ open class PictureViewModel @Inject constructor(
                 }
             }
         }
+    fun toggleFavoriteForDetailsImage(photo: PicsumImage) {
+        viewModelScope.launch {
+            val isFav = isImageFavorite(photo.id).first()
+            if (isFav) {
+                _isFavorite.value = false
+                repository.deleteImageById(photo.id)
+            } else {
+                _isFavorite.value = true
+                val updatedImage = photo.copy(
+                    isFavorite = true,
+                    source = "main",
+                    download_url = buildImageUrl(
+                        photo.download_url,
+                        _isGrayDetail.value,
+                        blurDetail
+                    )
+                )
+                repository.insertImage(updatedImage)
+            }
+        }
+    }
 
 
     fun isImageFavorite(id: String): Flow<Boolean> {

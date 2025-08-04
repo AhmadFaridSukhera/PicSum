@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,9 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,17 +55,31 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.finalapplication1.database.PicsumImage
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(photo: PicsumImage, navController: NavController) {
+fun DetailsScreen(
+    photo: PicsumImage, navController: NavController,
+    isFavorite: (PicsumImage) -> Flow<Boolean>,
+    toggleFavoriteForImage: (PicsumImage) -> Unit,
+    onToggleGrayscale: () -> Unit,
+    onBlurChangeFinished: (Float) -> Unit,
+    sliderPosition: Float,
+    onSliderValueChange: (Float) -> Unit,
+    isGray: State<Boolean>
+) {
+
 
     var showSheet by remember { mutableStateOf(false) }
+    LaunchedEffect(photo.id) {
+        onSliderValueChange(0f)
+        onBlurChangeFinished(0f)
+        if (isGray.value) onToggleGrayscale()
+    }
     var scale by remember { mutableFloatStateOf(1f) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-    var sliderPosition by remember { mutableStateOf(0f) }
-    var isGray by remember { mutableStateOf(false) }
 
 
 
@@ -119,7 +138,7 @@ fun DetailsScreen(photo: PicsumImage, navController: NavController) {
                     ),
                 contentDescription = photo.source,
                 contentScale = ContentScale.Crop,
-                colorFilter = if (isGray)
+                colorFilter = if (isGray.value)
                     ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
                 else null,
             )
@@ -165,6 +184,25 @@ fun DetailsScreen(photo: PicsumImage, navController: NavController) {
                     modifier = Modifier.fillMaxSize(0.6f),
                 )
             }
+            IconButton(
+                onClick = { toggleFavoriteForImage(photo) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .size(50.dp)
+                    .background(
+                        Color.Black.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            ) {
+                Icon(
+                    imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite
+                    else Icons.Default.FavoriteBorder,
+                    contentDescription = "favorite",
+                    tint = Color.White,
+                    modifier = Modifier.fillMaxSize(0.6f),
+                )
+            }
         }
         Column(
             modifier = Modifier
@@ -186,13 +224,13 @@ fun DetailsScreen(photo: PicsumImage, navController: NavController) {
                     if (showSheet) Text("Hide Details") else Text("Show Details")
                 }
                 Button(
-                    onClick = { isGray = !isGray },
+                    onClick = { onToggleGrayscale() },
                     modifier = Modifier.padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 ) {
-                    if (isGray) Text("Colored") else Text("GrayScale")
+                    Text(if (isGray.value) "Colored" else "Grayscale")
                 }
             }
             Row(
@@ -207,7 +245,8 @@ fun DetailsScreen(photo: PicsumImage, navController: NavController) {
 
                 Slider(
                     value = sliderPosition,
-                    onValueChange = { value -> sliderPosition = value },
+                    onValueChange = { value -> onSliderValueChange(value) },
+                    onValueChangeFinished = { onBlurChangeFinished(sliderPosition) },
                     steps = 9,
                     valueRange = 0f..10f,
                     modifier = Modifier.width(300.dp),

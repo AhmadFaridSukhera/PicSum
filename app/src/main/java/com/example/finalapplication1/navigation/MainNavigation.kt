@@ -91,7 +91,22 @@ fun MainNavigation() {
                 val image = allPhotos.find { it.id == photoId }
 
                 if (image != null) {
-                    DetailsScreen(photo = image, navController)
+                    DetailsScreen(
+                        photo = image,
+                        navController,
+                        isFavorite = { image -> viewModel.isImageFavorite(image.id) },
+                        toggleFavoriteForImage = { image ->
+                            viewModel.toggleFavoriteForDetailsImage(
+                                image
+                            )
+                        },
+                        onToggleGrayscale = { viewModel.toggleGrayscaleDetail() },
+                        onBlurChangeFinished = { viewModel.updateBlurDetail(it) },
+                        sliderPosition = viewModel.sliderPositionDetail,
+                        onSliderValueChange = { viewModel.sliderPositionDetail = it },
+                        isGray = viewModel.isGrayDetail.collectAsState(),
+
+                        )
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Image not found")
