@@ -5,14 +5,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-interface PicsumApiService {
-    // Get list of images
+interface PicSumApiService {
+
     @GET("v2/list")
     suspend fun getImageList(
         @Query("page") page: Int = 1, @Query("limit") limit: Int = 40
-    ): List<PicsumImage>
+    ): List<PicSumImage>
 
     @GET("seed/{seed}/info")
-    suspend fun getImageInfoBySeed(@Path("seed") seed: String): PicsumImage
+    suspend fun getImageInfoBySeed(@Path("seed") seed: String): PicSumImage
 
 }

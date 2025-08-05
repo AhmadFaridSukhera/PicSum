@@ -27,16 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.example.finalapplication1.database.PicsumImage
+import coil3.compose.AsyncImage
+
+import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
 
 
 @Composable
 fun PhotoItem(
-    photo: PicsumImage,
-    isFavorite: (PicsumImage) -> Flow<Boolean>,
-    onToggleFavorite: (PicsumImage) -> Unit,
+    photo: PicSumImage,
+    isFavorite: (PicSumImage) -> Flow<Boolean>,
+    onToggleFavorite: (PicSumImage) -> Unit,
     onClick: () -> Unit
 ) {
     var isImageLoading by remember { mutableStateOf(true) }

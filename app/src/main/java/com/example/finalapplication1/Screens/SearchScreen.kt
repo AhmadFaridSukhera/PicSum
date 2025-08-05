@@ -1,5 +1,6 @@
 package com.example.finalapplication1.Screens
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
-import com.example.finalapplication1.database.PicsumImage
+import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -31,17 +32,17 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(
-    photos: State<List<PicsumImage>>,
+    photos: State<List<PicSumImage>>,
     loadMorePhotos: () -> Unit,
-    isFavorite: (PicsumImage) -> Flow<Boolean>,
+    isFavorite: (PicSumImage) -> Flow<Boolean>,
     isLoading: State<Boolean>,
     navController: NavController,
-    toggleFavoriteForImage: (PicsumImage) -> Unit
+    toggleFavoriteForImage: (PicSumImage) -> Unit
 ) {
     val listState = rememberLazyStaggeredGridState()
 
-    val onPhotoClick: (String) -> Unit = remember(navController) {
-        { photoId -> navController.navigate("detail/$photoId") }
+    val onClick: (String) -> Unit = remember(navController) {
+        { download_url -> navController.navigate("detail/$download_url") }
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -62,15 +63,16 @@ fun SearchScreen(
 
                     items(
                         count = photos.value.size,
-                        key = { index -> photos.value[index].id }
+                        key = { index -> photos.value[index].download_url }
 
                     ) { index ->
                         val photo = photos.value[index]
+                        val encodedUrl = Uri.encode(photo.download_url)
                         PhotoItem(
                             photo = photo,
                             isFavorite,
                             onToggleFavorite = toggleFavoriteForImage,
-                            onClick = { onPhotoClick(photo.id) }
+                            onClick = { onClick("$encodedUrl") }
                         )
 
 

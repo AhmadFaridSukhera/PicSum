@@ -5,7 +5,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(val route: String, val label: String, val icon: ImageVector) {
@@ -14,5 +13,5 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: Image
     object Search : BottomNavItem("search", "Search", Icons.Filled.Search)
 }
 object DetailRoute {
-    const val route = "detail/{photoId}"
+    const val route = "detail/{download_url}"
 }

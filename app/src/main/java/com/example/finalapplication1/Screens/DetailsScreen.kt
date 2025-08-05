@@ -53,26 +53,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.example.finalapplication1.database.PicsumImage
+import coil3.compose.AsyncImage
+import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
-    photo: PicsumImage, navController: NavController,
-    isFavorite: (PicsumImage) -> Flow<Boolean>,
-    toggleFavoriteForImage: (PicsumImage) -> Unit,
+    photo: PicSumImage,
+    navController: NavController,
+    toggleFavoriteForImage: (PicSumImage) -> Unit,
     onToggleGrayscale: () -> Unit,
     onBlurChangeFinished: (Float) -> Unit,
     sliderPosition: Float,
     onSliderValueChange: (Float) -> Unit,
-    isGray: State<Boolean>
+    isGray: State<Boolean>,
+    updateFavoriteStatusForDetails: (PicSumImage) -> Unit,
+    buildImageUrl: (String, Boolean, Int) -> String,
+    isImageFavorite: (String) -> Flow<Boolean>
+
 ) {
 
+    val updatedUrl = remember(photo.download_url, isGray.value, sliderPosition) {
+        buildImageUrl(photo.download_url, isGray.value, sliderPosition.toInt())
+    }
+
+    val isFavState = isImageFavorite(updatedUrl).collectAsState(initial = false)
 
     var showSheet by remember { mutableStateOf(false) }
     LaunchedEffect(photo.id) {
+        updateFavoriteStatusForDetails(photo)
         onSliderValueChange(0f)
         onBlurChangeFinished(0f)
         if (isGray.value) onToggleGrayscale()
@@ -185,7 +195,10 @@ fun DetailsScreen(
                 )
             }
             IconButton(
-                onClick = { toggleFavoriteForImage(photo) },
+                onClick = {
+                    toggleFavoriteForImage(photo)
+                    updateFavoriteStatusForDetails(photo)
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
@@ -196,7 +209,7 @@ fun DetailsScreen(
                     )
             ) {
                 Icon(
-                    imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite
+                    imageVector = if (isFavState.value) Icons.Default.Favorite
                     else Icons.Default.FavoriteBorder,
                     contentDescription = "favorite",
                     tint = Color.White,
@@ -224,7 +237,10 @@ fun DetailsScreen(
                     if (showSheet) Text("Hide Details") else Text("Show Details")
                 }
                 Button(
-                    onClick = { onToggleGrayscale() },
+                    onClick = {
+                        onToggleGrayscale()
+                        updateFavoriteStatusForDetails(photo)
+                    },
                     modifier = Modifier.padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onErrorContainer
@@ -246,7 +262,10 @@ fun DetailsScreen(
                 Slider(
                     value = sliderPosition,
                     onValueChange = { value -> onSliderValueChange(value) },
-                    onValueChangeFinished = { onBlurChangeFinished(sliderPosition) },
+                    onValueChangeFinished = {
+                        onBlurChangeFinished(sliderPosition)
+                        updateFavoriteStatusForDetails(photo)
+                    },
                     steps = 9,
                     valueRange = 0f..10f,
                     modifier = Modifier.width(300.dp),
@@ -259,23 +278,3 @@ fun DetailsScreen(
         }
     }
 }
-
-//        if (showSheet) {
-//            ModalBottomSheet(
-//                onDismissRequest = { showSheet = false },
-//                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Text("Image Details", fontSize = 24.sp)
-//                    Text("Id: ${photo.id}")
-//                    Text("Captured By: ${photo.author}")
-//                    Text("Width: ${photo.width}")
-//                    Text("Height: ${photo.height}")
-//                }
-//            }
-//        }
