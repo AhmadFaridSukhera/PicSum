@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-open class PictureViewModel @Inject constructor(
+class PictureViewModel @Inject constructor(
     private val repository: PicSumRepository
 ) : ViewModel() {
 
@@ -82,7 +82,7 @@ open class PictureViewModel @Inject constructor(
             imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
 
             val finalImage = photo.copy(
-                isFavorite = true,
+                isFavorite = false,
                 source = "main",
                 download_url = imageUrl ?: photo.download_url
             )

@@ -17,11 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
 import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
@@ -30,15 +28,12 @@ import kotlinx.coroutines.flow.Flow
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoriteScreen(
-    navController: NavController,
+    onPhotoClick: (String) -> Unit,
     favorites: State<List<PicSumImage>>,
     isFavorite: (PicSumImage) -> Flow<Boolean>,
     toggleFavoriteForImage: (PicSumImage) -> Unit,
 
     ) {
-    val onPhotoClick: (String) -> Unit = remember(navController) {
-        { download_url -> navController.navigate("detail/$download_url") }
-    }
 
     Column(
         modifier = Modifier

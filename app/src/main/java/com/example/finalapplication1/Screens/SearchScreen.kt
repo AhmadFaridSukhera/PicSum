@@ -17,12 +17,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.finalapplication1.PhotoItem
 import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
@@ -34,16 +32,13 @@ import kotlinx.coroutines.flow.collectLatest
 fun SearchScreen(
     photos: State<List<PicSumImage>>,
     loadMorePhotos: () -> Unit,
-    isFavorite: (PicSumImage) -> Flow<Boolean>,
+    isFavoriteFlow: (PicSumImage) -> Flow<Boolean>,
     isLoading: State<Boolean>,
-    navController: NavController,
+    onPhotoClick: (String) -> Unit,
     toggleFavoriteForImage: (PicSumImage) -> Unit
 ) {
     val listState = rememberLazyStaggeredGridState()
 
-    val onClick: (String) -> Unit = remember(navController) {
-        { download_url -> navController.navigate("detail/$download_url") }
-    }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surfaceDim
@@ -70,9 +65,9 @@ fun SearchScreen(
                         val encodedUrl = Uri.encode(photo.download_url)
                         PhotoItem(
                             photo = photo,
-                            isFavorite,
+                            isFavoriteFlow,
                             onToggleFavorite = toggleFavoriteForImage,
-                            onClick = { onClick("$encodedUrl") }
+                            onClick = { onPhotoClick("$encodedUrl") }
                         )
 
 

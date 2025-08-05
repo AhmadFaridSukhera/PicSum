@@ -52,7 +52,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
@@ -61,7 +60,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun DetailsScreen(
     photo: PicSumImage,
-    navController: NavController,
+    onBackClick: () -> Unit,
     toggleFavoriteForImage: (PicSumImage) -> Unit,
     onToggleGrayscale: () -> Unit,
     onBlurChangeFinished: (Float) -> Unit,
@@ -178,7 +177,7 @@ fun DetailsScreen(
                 }
             }
             IconButton(
-                onClick = { navController.popBackStack() },
+                onClick = onBackClick,
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(8.dp)

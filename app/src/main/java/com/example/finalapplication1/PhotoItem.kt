@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-
 import com.example.finalapplication1.database.PicSumImage
 import kotlinx.coroutines.flow.Flow
 
@@ -41,7 +40,7 @@ fun PhotoItem(
     onClick: () -> Unit
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
-
+    var FavState = isFavorite(photo).collectAsState(initial = false).value
 
 
     Card(
@@ -93,7 +92,7 @@ fun PhotoItem(
                     }, modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite(photo).collectAsState(initial = false).value) Icons.Default.Favorite
+                        imageVector = if (FavState) Icons.Default.Favorite
                         else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(24.dp),
