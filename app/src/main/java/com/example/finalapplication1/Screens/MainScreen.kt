@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
@@ -72,6 +73,7 @@ fun MainScreen(
 ) {
 
     var isImageLoading by remember { mutableStateOf(true) }
+    var imageFailed by remember { mutableStateOf(false) }
     var scale by remember { mutableFloatStateOf(1f) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -157,7 +159,29 @@ fun MainScreen(
                             isImageLoading = false
                         }
                     )
+                    if (imageFailed) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "ImageFailed",
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.fillMaxSize(0.1f),
+
+                                )
+                            Text("Image failed to load.Refresh Again")
+                        }
+
+                    }
                 }
+
+
                 if (isImageLoading) {
                     Box(
                         modifier = Modifier
@@ -171,6 +195,7 @@ fun MainScreen(
                 IconButton(
                     onClick = {
                         isImageLoading = true
+                        imageFailed = false
                         refreshImage()
                     },
 
