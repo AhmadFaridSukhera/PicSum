@@ -3,96 +3,150 @@ package com.example.finalapplication1.Screens
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.example.finalapplication1.PictureViewModel
-
+import coil3.compose.AsyncImage
 
 @Composable
-fun MainScreen(viewModel: PictureViewModel) {
+fun MainScreen(
+    imageUrl: String?,
+    isFavorite: State<Boolean>,
+    onToggleFavorite: () -> Unit,
+    refreshImage: () -> Unit,
+    onToggleGrayscale: () -> Unit,
+    onBlurChangeFinished: (Float) -> Unit,
+    sliderPosition: Float,
+    onSliderValueChange: (Float) -> Unit,
+    isGray: State<Boolean>,
+    updateFavoriteStatusForCurrent: (String) -> Unit,
+) {
 
-    val isFavorite by viewModel.isCurrentImageFavoriteFlow().collectAsState(initial = false)
-    var imageUrl = viewModel.imageUrl
     var isImageLoading by remember { mutableStateOf(true) }
+    var imageFailed by remember { mutableStateOf(false) }
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var offsetY by remember { mutableFloatStateOf(0f) }
 
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(
-                    text = "Hello, Ahmad", fontSize = 24.sp,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text("Welcome to PictureView")
-            }
-
+    LaunchedEffect(imageUrl) {
+        if (imageUrl != null) {
+            updateFavoriteStatusForCurrent(imageUrl)
         }
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary),
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-
         ) {
-            Text(
-                text = "Photo Preview", fontSize = 24.sp,
-                style = MaterialTheme.typography.labelLarge
-            )
-
-
-            Surface(
-                modifier = Modifier.height(300.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Box {
+            Log.d("HELO", "imageurllll ${imageUrl}")
+            Box(modifier = Modifier
+                .height(600.dp)
+                .clip(RoundedCornerShape(10.dp))) {
+                if (!imageUrl.isNullOrEmpty()) {
                     AsyncImage(
+
                         model = imageUrl,
                         contentDescription = "Random picture",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .pointerInput(Unit) {
+                                detectTransformGestures { _, pan, zoom, _ ->
+                                    val newScale = (zoom * scale).coerceIn(1f, 4f)
+                                    scale = newScale
+                                    if (newScale > 1f) {
+                                        val maxX = (newScale - 1f) * size.width / 2
+                                        val maxY = (newScale - 1f) * size.height / 2
+                                        offsetX = (offsetX + pan.x).coerceIn(-maxX, maxX)
+                                        offsetY = (offsetY + pan.y).coerceIn(-maxY, maxY)
+                                    } else {
+                                        offsetX = 0f
+                                        offsetY = 0f
+                                    }
+                                }
+                            }
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = { _: Offset ->
+                                        if (scale > 1f) {
+                                            scale = 1f
+                                            offsetY = 0f
+                                            offsetX = 0f
+                                        } else {
+                                            scale = 2f
+                                        }
+                                    }
+                                )
+                            }
+                            .graphicsLayer(
+                                scaleX = scale,
+                                scaleY = scale,
+                                translationX = offsetX,
+                                translationY = offsetY,
+                                transformOrigin = TransformOrigin.Center
+                            )
+                            .fillMaxSize()
+                            .blur(
+                                sliderPosition.dp,
+                                edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(8.dp))
+                            ),
+                        colorFilter = if (isGray.value)
+                            ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                        else null,
                         contentScale = ContentScale.Crop,
                         onLoading = {
                             isImageLoading = true
@@ -101,100 +155,130 @@ fun MainScreen(viewModel: PictureViewModel) {
                             isImageLoading = false
                         },
                         onError = {
+                            Log.e("ImageLoad", "Error loading image from $imageUrl")
                             isImageLoading = false
+                            imageFailed = true
                         }
                     )
-
-                    if (isImageLoading) {
-                        Box(
+                    if (imageFailed) {
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.4f)),
-                            contentAlignment = Alignment.Center
+                                .background(Color.Black),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            CircularProgressIndicator(color = Color.White)
+
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "ImageFailed",
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.fillMaxSize(0.1f),
+
+                                )
+                            Text("Image failed to load. Refresh Again")
                         }
+
                     }
-                    IconButton(
-                        onClick = { viewModel.refreshImage() },
+                }
+
+
+                if (isImageLoading) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                            .size(50.dp)
-                            .background(
-                                Color.Black.copy(alpha = 0.4f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh",
-                            tint = Color.White,
-                            modifier = Modifier.fillMaxSize(0.6f),
-
-                            )
+                        CircularProgressIndicator(color = Color.White)
                     }
+                }
+                IconButton(
+                    onClick = {
+                        isImageLoading = true
+                        imageFailed = false
+                        refreshImage()
+                    },
 
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(50.dp)
+                        .background(
+                            Color.Black.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Refresh",
+                        tint = Color.White,
+                        modifier = Modifier.fillMaxSize(0.6f),
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(
                         onClick = {
-
-                            Log.d(
-                                "DEBUG",
-                                "url: ${viewModel.imageUrl}\n fav: $isFavorite"
-                            )
-
-                            viewModel.toggleFavoriteForCurrentImage()
+                            onToggleFavorite()
                         },
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
                             .padding(8.dp)
-                            .size(50.dp)
-                            .background(
-                                Color.Black.copy(alpha = 0.4f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            .size(40.dp)
                     ) {
                         Icon(
-                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Unfavorite" else "Favorite",
-                            tint = Color.White,
+                            imageVector = if (isFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite.value) "Unfavorite" else "Favorite",
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
                             modifier = Modifier.fillMaxSize(0.6f)
                         )
                     }
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer),
+                        onClick = {
+                            onToggleGrayscale()
+                        }
+                    ) {
+                        Text(if (isGray.value) "Colored" else "Grayscale")
+                    }
                 }
-            }
-
-
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "BlurControl"
-                    )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                ) {
+                    Text(text = "Add Blur")
+
                     Slider(
-                        value = viewModel.sliderPosition,
-                        onValueChange = {value -> viewModel.sliderPosition=value },
-                        onValueChangeFinished = {viewModel.updateBlur(viewModel.sliderPosition)},
+                        value = sliderPosition,
+                        onValueChange = { value -> onSliderValueChange(value) },
+                        onValueChangeFinished = {
+
+                            onBlurChangeFinished(sliderPosition)
+                        },
                         steps = 9,
                         valueRange = 0f..10f,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier.width(300.dp),
+                        colors = SliderDefaults.colors(
+                            MaterialTheme.colorScheme.onErrorContainer,
+                            activeTrackColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
                     )
-                }
-                Button(onClick = viewModel::toggleGrayscale) {
-                    Text(if (viewModel.isGray) "Colored" else "Grayscale")
                 }
             }
         }
-
-
     }
 }

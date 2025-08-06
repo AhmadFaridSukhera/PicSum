@@ -42,8 +42,11 @@ android {
 }
 
 dependencies {
+    //for splash screen
+    implementation(libs.androidx.core.splashscreen)
     // for hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.ui.text.google.fonts)
     ksp(libs.hilt.compiler)
 
 
@@ -58,6 +61,7 @@ dependencies {
 
     // AsyncImage (Coil)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

@@ -22,6 +22,6 @@ object NetworkClient {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): PicsumApiService =
-        retrofit.create(PicsumApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): PicSumApiService =
+        retrofit.create(PicSumApiService::class.java)
 }

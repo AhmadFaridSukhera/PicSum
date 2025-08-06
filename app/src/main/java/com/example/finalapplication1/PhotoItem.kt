@@ -2,25 +2,20 @@ package com.example.finalapplication1
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,39 +24,47 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.example.finalapplication1.database.PicsumImage
+import coil3.compose.AsyncImage
+import com.example.finalapplication1.database.PicSumImage
+import kotlinx.coroutines.flow.Flow
 
 
 @Composable
 fun PhotoItem(
-    photo: PicsumImage,
-    viewModel: PictureViewModel,
+    photo: PicSumImage,
+    isFavorite: (PicSumImage) -> Flow<Boolean>,
+    onToggleFavorite: (PicSumImage) -> Unit,
+    onClick: () -> Unit
 ) {
-    val isFavorite by viewModel.isImageFavorite(photo.id).collectAsState(initial = false)
     var isImageLoading by remember { mutableStateOf(true) }
+    var favState = isFavorite(photo).collectAsState(initial = false).value
 
 
-    Card(modifier = Modifier.padding(8.dp)) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
+    Card(
+        modifier = Modifier
+            .aspectRatio(photo.width.toFloat() / photo.height.toFloat())
+            .combinedClickable(
+                onClick = onClick,
+            ),
+        elevation = CardDefaults.cardElevation(1.dp)
+    ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
+                modifier = (Modifier
+                    .fillMaxSize())
+
             ) {
                 AsyncImage(
                     model = photo.download_url,
-                    contentDescription = photo.id,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+
+                    contentDescription = photo.id,
+
                     onSuccess = {
                         isImageLoading = false
                     },
@@ -75,38 +78,35 @@ fun PhotoItem(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.4f)),
-                        contentAlignment = Alignment.Center
+                            .background(Color.Gray)
                     ) {
-                        CircularProgressIndicator(color = Color.White)
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.White
+                        )
                     }
                 }
                 IconButton(
                     onClick = {
-                        viewModel.toggleFavoriteForImage(photo)
+                        onToggleFavorite(photo)
                     }, modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        imageVector = if (favState) Icons.Default.Favorite
+                        else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
+                        modifier = Modifier.size(24.dp),
                         tint = Color.White
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Captured by:  ${photo.author}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
 
-        }
     }
-}
+    }
+
+
+
+
 
 
