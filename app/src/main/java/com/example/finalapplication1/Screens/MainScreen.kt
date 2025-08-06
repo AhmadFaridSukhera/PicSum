@@ -157,6 +157,7 @@ fun MainScreen(
                         onError = {
                             Log.e("ImageLoad", "Error loading image from $imageUrl")
                             isImageLoading = false
+                            imageFailed = true
                         }
                     )
                     if (imageFailed) {
@@ -175,7 +176,7 @@ fun MainScreen(
                                 modifier = Modifier.fillMaxSize(0.1f),
 
                                 )
-                            Text("Image failed to load.Refresh Again")
+                            Text("Image failed to load. Refresh Again")
                         }
 
                     }
