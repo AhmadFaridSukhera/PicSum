@@ -77,7 +77,9 @@ class PictureViewModel @Inject constructor(
     fun refreshImage() {
         viewModelScope.launch {
             val photo = repository.getImageBySeed()
-
+            _isFavorite.value = false
+            sliderPosition = 0f
+            _isGray.value = false
             baseImageUrl = photo.download_url
             imageUrl = buildImageUrl(baseImageUrl, _isGray.value, blur)
 
@@ -86,9 +88,7 @@ class PictureViewModel @Inject constructor(
                 source = "main",
                 download_url = imageUrl ?: photo.download_url
             )
-            _isFavorite.value = false
-            sliderPosition = 0f
-            _isGray.value = false
+
             _photo.value = finalImage
 
         }
@@ -218,7 +218,7 @@ class PictureViewModel @Inject constructor(
             } else {
                 _isFavorite.value = true
                 Log.d(
-                    "Blurping",
+                    "Blue",
                     "baseUrl=${updatedImage.download_url}, gray=${_isGrayDetail.value}, blur=$blurDetail"
                 )
                 repository.insertImage(updatedImage)

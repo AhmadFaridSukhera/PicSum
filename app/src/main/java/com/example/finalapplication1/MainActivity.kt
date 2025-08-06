@@ -16,8 +16,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         setContent {
-            AppTheme(
-            ) {
+            AppTheme {
                 MainNavigation()
             }
         }

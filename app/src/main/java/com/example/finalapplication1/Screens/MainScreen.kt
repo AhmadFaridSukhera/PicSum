@@ -1,12 +1,10 @@
 package com.example.finalapplication1.Screens
 
 
-
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -90,74 +89,75 @@ fun MainScreen(
             .background(MaterialTheme.colorScheme.primary),
     ) {
         Column(
-            modifier = Modifier.scrollable(
-                orientation = Orientation.Vertical,
-                state = rememberScrollState()
-            ),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Log.d("HELO", "imageurllll ${imageUrl}")
             Box(modifier = Modifier
                 .height(600.dp)
                 .clip(RoundedCornerShape(10.dp))) {
-                AsyncImage(
-                    model = imageUrl ?: "",
-                    contentDescription = "Random picture",
-                    modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectTransformGestures { _, pan, zoom, _ ->
-                                val newScale = (zoom * scale).coerceIn(1f, 4f)
-                                scale = newScale
-                                if (newScale > 1f) {
-                                    val maxX = (newScale - 1f) * size.width / 2
-                                    val maxY = (newScale - 1f) * size.height / 2
-                                    offsetX = (offsetX + pan.x).coerceIn(-maxX, maxX)
-                                    offsetY = (offsetY + pan.y).coerceIn(-maxY, maxY)
-                                } else {
-                                    offsetX = 0f
-                                    offsetY = 0f
-                                }
-                            }
-                        }
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onDoubleTap = { _: Offset ->
-                                    if (scale > 1f) {
-                                        scale = 1f
-                                        offsetY = 0f
-                                        offsetX = 0f
+                if (!imageUrl.isNullOrEmpty()) {
+                    AsyncImage(
+
+                        model = imageUrl,
+                        contentDescription = "Random picture",
+                        modifier = Modifier
+                            .pointerInput(Unit) {
+                                detectTransformGestures { _, pan, zoom, _ ->
+                                    val newScale = (zoom * scale).coerceIn(1f, 4f)
+                                    scale = newScale
+                                    if (newScale > 1f) {
+                                        val maxX = (newScale - 1f) * size.width / 2
+                                        val maxY = (newScale - 1f) * size.height / 2
+                                        offsetX = (offsetX + pan.x).coerceIn(-maxX, maxX)
+                                        offsetY = (offsetY + pan.y).coerceIn(-maxY, maxY)
                                     } else {
-                                        scale = 2f
+                                        offsetX = 0f
+                                        offsetY = 0f
                                     }
                                 }
+                            }
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = { _: Offset ->
+                                        if (scale > 1f) {
+                                            scale = 1f
+                                            offsetY = 0f
+                                            offsetX = 0f
+                                        } else {
+                                            scale = 2f
+                                        }
+                                    }
+                                )
+                            }
+                            .graphicsLayer(
+                                scaleX = scale,
+                                scaleY = scale,
+                                translationX = offsetX,
+                                translationY = offsetY,
+                                transformOrigin = TransformOrigin.Center
                             )
+                            .fillMaxSize()
+                            .blur(
+                                sliderPosition.dp,
+                                edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(8.dp))
+                            ),
+                        colorFilter = if (isGray.value)
+                            ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                        else null,
+                        contentScale = ContentScale.Crop,
+                        onLoading = {
+                            isImageLoading = true
+                        },
+                        onSuccess = {
+                            isImageLoading = false
+                        },
+                        onError = {
+                            Log.e("ImageLoad", "Error loading image from $imageUrl")
+                            isImageLoading = false
                         }
-                        .graphicsLayer(
-                            scaleX = scale,
-                            scaleY = scale,
-                            translationX = offsetX,
-                            translationY = offsetY,
-                            transformOrigin = TransformOrigin.Center
-                        )
-                        .fillMaxSize()
-                        .blur(
-                            sliderPosition.dp,
-                            edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(8.dp))
-                        ),
-                    colorFilter = if (isGray.value)
-                        ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
-                    else null,
-                    contentScale = ContentScale.Crop,
-                    onLoading = {
-                        isImageLoading = true
-                    },
-                    onSuccess = {
-                        isImageLoading = false
-                    },
-                    onError = {
-                        isImageLoading = false
-                    }
-                )
-
+                    )
+                }
                 if (isImageLoading) {
                     Box(
                         modifier = Modifier
@@ -169,7 +169,11 @@ fun MainScreen(
                     }
                 }
                 IconButton(
-                    onClick = { refreshImage() },
+                    onClick = {
+                        isImageLoading = true
+                        refreshImage()
+                    },
+
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)

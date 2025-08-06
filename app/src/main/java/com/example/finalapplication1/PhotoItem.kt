@@ -40,7 +40,7 @@ fun PhotoItem(
     onClick: () -> Unit
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
-    var FavState = isFavorite(photo).collectAsState(initial = false).value
+    var favState = isFavorite(photo).collectAsState(initial = false).value
 
 
     Card(
@@ -92,7 +92,7 @@ fun PhotoItem(
                     }, modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (FavState) Icons.Default.Favorite
+                        imageVector = if (favState) Icons.Default.Favorite
                         else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier.size(24.dp),

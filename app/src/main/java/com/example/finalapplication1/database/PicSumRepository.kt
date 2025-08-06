@@ -19,10 +19,10 @@ class PicSumRepository @Inject constructor(
             return apiService.getImageInfoBySeed("$seed")
         } catch (exception: SocketTimeoutException) {
             Log.d("SocketTimeOutException", exception.toString())
-            return PicSumImage()
+            return apiService.getImageInfoBySeed("$seed")
         } catch (exception: Exception) {
             Log.d("Exception", exception.toString())
-            return PicSumImage()
+            return apiService.getImageInfoBySeed("$seed")
         }
 
     }
